@@ -40,6 +40,8 @@ class ListArticlesTest extends TestCase
 
     function can_fetch_all_articles()
     {
+        //manejo de errores
+        $this->withoutExceptionHandling();
         $articles = Article::factory()->count(3)->create();
 
         $response = $this->getJson(route('api.v1.articles.index'));
@@ -48,7 +50,7 @@ class ListArticlesTest extends TestCase
             'data' => [
                 [
                     'type' => 'articles',
-                    'id' => (string) $articles->getRouteKey(),
+                    'id' => (string) $articles[0]->getRouteKey(),
                     'attributes' => [
                         'title' => $articles[0]->title,
                         'slug' => $articles[0]->slug,
@@ -60,7 +62,7 @@ class ListArticlesTest extends TestCase
                 ],
                 [
                     'type' => 'articles',
-                    'id' => (string) $articles->getRouteKey(),
+                    'id' => (string) $articles[1]->getRouteKey(),
                     'attributes' => [
                         'title' => $articles[1]->title,
                         'slug' => $articles[1]->slug,
@@ -72,7 +74,7 @@ class ListArticlesTest extends TestCase
                 ],
                 [
                     'type' => 'articles',
-                    'id' => (string) $articles->getRouteKey(),
+                    'id' => (string) $articles[2]->getRouteKey(),
                     'attributes' => [
                         'title' => $articles[2]->title,
                         'slug' => $articles[2]->slug,
