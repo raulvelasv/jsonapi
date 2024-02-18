@@ -13,4 +13,9 @@ class ArticleController extends Controller
     {
         return ArticleResource::make($article);
     }
+    public function index()
+    {
+        $articles = Article::all();
+        return ArticleResource::collection($articles);
+    }
 }
