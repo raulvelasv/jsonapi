@@ -17,5 +17,8 @@ class ValidateJsonApiHeadersTest extends TestCase
             return 'OK';
         })->middleware(ValidateJsonApiHeader::class);
         $this->get('test_route')->assertStatus(406);
+        $this->get('test_route', [
+            'accept' => 'application/vnd.api+json'
+        ])->assertSuccessful();
     }
 }
