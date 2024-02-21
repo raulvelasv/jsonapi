@@ -19,5 +19,10 @@ class ValidateJsonApiHeader
         if ($request->header('accept') !== 'application/vnd.api+json') {
             throw new HttpException(406);
         }
+        if ($request->method() === 'POST') {
+            if ($request->header('content-type') !== 'application/vnd.api+json') {
+                throw new HttpException(415);
+            }
+        }
     }
 }

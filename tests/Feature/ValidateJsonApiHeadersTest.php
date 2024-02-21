@@ -21,4 +21,17 @@ class ValidateJsonApiHeadersTest extends TestCase
             'accept' => 'application/vnd.api+json'
         ])->assertSuccessful();
     }
+    /** @test */
+    public function content_type_header_must_be_present_on_all_requests()
+    {
+        Route::post('test_route', function () {
+            return 'OK';
+        })->middleware(ValidateJsonApiHeader::class);
+        $this->post('test_route', [], [
+            'accept' => 'application/vnd.api+json'
+        ])->assertStatus(415);
+        // $this->get('test_route', [
+        //     'accept' => 'application/vnd.api+json'
+        // ])->assertSuccessful();
+    }
 }
