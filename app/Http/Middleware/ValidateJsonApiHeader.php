@@ -14,6 +14,7 @@ class ValidateJsonApiHeader
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+    /** @var \Illuminate\Http\Response $response */
     public function handle(Request $request, Closure $next)
     {
         if ($request->header('accept') !== 'application/vnd.api+json') {
@@ -24,5 +25,8 @@ class ValidateJsonApiHeader
                 throw new HttpException(415);
             }
         }
+        return $next($request)->withHeaders([
+            'content-type' => 'application/vnd.api+json'
+        ]);
     }
 }
