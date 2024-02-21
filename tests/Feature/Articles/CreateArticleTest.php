@@ -26,7 +26,10 @@ class CreateArticleTest extends TestCase
         ]);
         $response->assertCreated();
         $article = Article::first();
-
+        $response->assertHeader(
+            'Location',
+            route('api.v1.articles.show', $article)
+        );
         $response->assertJson([
             'data' => [
                 'type' => 'articles',
