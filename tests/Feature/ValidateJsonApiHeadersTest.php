@@ -22,7 +22,7 @@ class ValidateJsonApiHeadersTest extends TestCase
         ])->assertSuccessful();
     }
     /** @test */
-    public function content_type_header_must_be_present_on_all_requests()
+    public function content_type_header_must_be_present_on_all_posts_requests()
     {
         Route::post('test_route', function () {
             return 'OK';
@@ -30,8 +30,23 @@ class ValidateJsonApiHeadersTest extends TestCase
         $this->post('test_route', [], [
             'accept' => 'application/vnd.api+json'
         ])->assertStatus(415);
-        // $this->get('test_route', [
-        //     'accept' => 'application/vnd.api+json'
-        // ])->assertSuccessful();
+        $this->post('test_route', [], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertSuccessful();
+    }
+    /** @test */
+    public function content_type_header_must_be_present_on_all_patch_requests()
+    {
+        Route::patch('test_route', function () {
+            return 'OK';
+        })->middleware(ValidateJsonApiHeader::class);
+        $this->patch('test_route', [], [
+            'accept' => 'application/vnd.api+json'
+        ])->assertStatus(415);
+        $this->patch('test_route', [], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertSuccessful();
     }
 }
