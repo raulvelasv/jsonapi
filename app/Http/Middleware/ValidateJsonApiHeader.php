@@ -18,11 +18,11 @@ class ValidateJsonApiHeader
     public function handle(Request $request, Closure $next)
     {
         if ($request->header('accept') !== 'application/vnd.api+json') {
-            throw new HttpException(406);
+            throw new HttpException(406, __('Not Acceptable'));
         }
         if ($request->method() === 'POST' || $request->method() === 'PATCH') {
             if ($request->header('content-type') !== 'application/vnd.api+json') {
-                throw new HttpException(415);
+                throw new HttpException(415, __('Unsupported Media Type'));
             }
         }
         return $next($request)->withHeaders([
