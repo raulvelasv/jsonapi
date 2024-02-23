@@ -3,7 +3,9 @@
 namespace Tests;
 
 use Closure;
+use PHPUnit\Framework\Assert as PHPUnit;
 use Illuminate\Testing\TestResponse;
+use PHPUnit\Framework\ExpectationFailedException;
 
 trait MakesJsonApiRequests
 {
@@ -18,14 +20,25 @@ trait MakesJsonApiRequests
     protected function assertJsonApiValidationErrors(): Closure
     {
         return function ($attribute) {
+            try {
+                $this->assertJsonFragment([
+                    'source' => ['pointer' => '/data/attributes/' . $attribute]
+                ]);
+            } catch (ExpectationFailedException $e) {
+                PHPUnit::fail('Failed to find a JSON:API validation error for key:' . $attribute
+                    . PHP_EOL . PHP_EOL .
+                    $e->getMessage());
+            }
+
             $this->assertJsonStructure([
                 'errors' => [
                     ['title', 'detail', 'source' => ['pointer']]
                 ]
-            ])->assertJsonFragment([
-                'source' => ['pointer' => '/data/attributes/' . $attribute]
-            ])->assertHeader('content-type', 'application/vnd.api+json')
-                ->assertStatus(422);
+            ]);
+            $this->assertHeader(
+                'content-type',
+                'application/vnd.api+json'
+            )->assertStatus(422);
         };
     }
 
