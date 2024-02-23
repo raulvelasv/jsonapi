@@ -21,7 +21,7 @@ class ArticleController extends Controller
         $articles = Article::all();
         return ArticleCollection::make($articles);
     }
-    public function create(Request $request): ArticleResource
+    public function store(Request $request): ArticleResource
     {
         $request->validate([
             'data.attributes.title' => ['required', 'min:4'],
