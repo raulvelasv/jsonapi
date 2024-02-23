@@ -11,6 +11,24 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class CreateArticleTest extends TestCase
 {
     use RefreshDatabase;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        TestResponse::macro(
+            'assertJsonApiValidationErrors',
+            function ($attribute) {
+                /**@var TestResponse $this*/
+                $this->assertJsonStructure([
+                    'errors' => [
+                        ['title', 'detail', 'source' => ['pointer']]
+                    ]
+                ])->assertJsonFragment([
+                    'source' => ['pointer' => '/data/attributes/' . $attribute]
+                ])->assertHeader('content-type', 'application/vnd.api+json')
+                    ->assertStatus(422);
+            }
+        );
+    }
     /** @test */
     public function can_create_articles()
     {
@@ -61,20 +79,7 @@ class CreateArticleTest extends TestCase
                 ]
             ]
         ]);
-        TestResponse::macro(
-            'assertJsonApiValidationErrors',
-            function ($attribute) {
-                /**@var TestResponse $this*/
-                $this->assertJsonStructure([
-                    'errors' => [
-                        ['title', 'detail', 'source' => ['pointer']]
-                    ]
-                ])->assertJsonFragment([
-                    'source' => ['pointer' => '/data/attributes/title']
-                ])->assertHeader('content-type', 'application/vnd.api+json')
-                    ->assertStatus(422);
-            }
-        );
+
 
 
         $response->assertJsonApiValidationErrors('title');
@@ -92,7 +97,7 @@ class CreateArticleTest extends TestCase
                 ]
             ]
         ]);
-        $response->assertJsonValidationErrors('data.attributes.title');
+        $response->assertJsonApiValidationErrors('title');
     }
     /** @test */
     public function slug_is_required()
@@ -106,7 +111,7 @@ class CreateArticleTest extends TestCase
                 ]
             ]
         ]);
-        $response->assertJsonValidationErrors('data.attributes.slug');
+        $response->assertJsonApiValidationErrors('slug');
     }
     /** @test */
     public function content_is_required()
@@ -120,6 +125,6 @@ class CreateArticleTest extends TestCase
                 ]
             ]
         ]);
-        $response->assertJsonValidationErrors('data.attributes.content');
+        $response->assertJsonApiValidationErrors('content');
     }
 }
