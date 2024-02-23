@@ -25,7 +25,7 @@ class CreateArticleTest extends TestCase
                     'content' => 'content of my first article'
                 ]
             ]
-        ]);
+        ])->dump();
         $response->assertCreated();
         $article = Article::first();
         $response->assertHeader(
