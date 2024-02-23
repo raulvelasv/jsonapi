@@ -13,7 +13,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function can_create_articles()
     {
-        $this->withoutExceptionHandling();
+        // $this->withoutExceptionHandling();
         $response = $this->postJson(route('api.v1.articles.create'), [
             'data' => [
                 'type' => 'articles',
@@ -52,6 +52,21 @@ class CreateArticleTest extends TestCase
             'data' => [
                 'type' => 'articles',
                 'attributes' => [
+                    'slug' => 'my-first-article',
+                    'content' => 'content of my first article'
+                ]
+            ]
+        ]);
+        $response->assertJsonValidationErrors('data.attributes.title');
+    }
+    /** @test */
+    public function title_must_be_at_least_4_characters()
+    {
+        $response = $this->postJson(route('api.v1.articles.create'), [
+            'data' => [
+                'type' => 'articles',
+                'attributes' => [
+                    'title' => 'abc',
                     'slug' => 'my-first-article',
                     'content' => 'content of my first article'
                 ]
