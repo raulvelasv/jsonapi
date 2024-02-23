@@ -43,4 +43,20 @@ class ValidateJsonApiDocumentTest extends TestCase
             ->dump()
             ->assertJsonApiValidationErrors('data');
     }
+    /** @test */
+    public function data_type_is_required()
+    {
+        $this->postJson('test_route', [
+            'data' => [
+                'attributes' => []
+            ]
+        ])
+            ->assertJsonApiValidationErrors('data.type');
+        $this->patchJson('test_route', [
+            'data' => [
+                'attributes' => []
+            ]
+        ])
+            ->assertJsonApiValidationErrors('data.type');
+    }
 }

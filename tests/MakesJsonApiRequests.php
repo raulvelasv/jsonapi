@@ -22,7 +22,7 @@ trait MakesJsonApiRequests
     {
         return function ($attribute) {
             $pointer =  Str::of($attribute)->startsWith('data')
-                ? "/{$attribute}"
+                ? "/" . str_replace('.', '/', $attribute)
                 : "/data/attributes/{$attribute}";
             try {
                 $this->assertJsonFragment([
