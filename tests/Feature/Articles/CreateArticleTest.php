@@ -4,6 +4,7 @@ namespace Tests\Feature\Articles;
 
 use Tests\TestCase;
 use App\Models\Article;
+use Illuminate\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -59,16 +60,24 @@ class CreateArticleTest extends TestCase
                     'content' => 'content of my first article'
                 ]
             ]
-        ])->dump();
-        $response->assertJsonStructure([
-            'errors' => [
-                ['title', 'detail', 'source' => ['pointer']]
-            ]
-        ])->assertJsonFragment([
-            'source' => ['pointer' => '/data/attributes/title']
-        ])->assertHeader('content-type', 'application/vnd.api+json')
-            ->assertStatus(422);
-        // $response->assertJsonValidationErrors('data.attributes.title');
+        ]);
+        TestResponse::macro(
+            'assertJsonApiValidationErrors',
+            function ($attribute) {
+                /**@var TestResponse $this*/
+                $this->assertJsonStructure([
+                    'errors' => [
+                        ['title', 'detail', 'source' => ['pointer']]
+                    ]
+                ])->assertJsonFragment([
+                    'source' => ['pointer' => '/data/attributes/title']
+                ])->assertHeader('content-type', 'application/vnd.api+json')
+                    ->assertStatus(422);
+            }
+        );
+
+
+        $response->assertJsonApiValidationErrors('title');
     }
     /** @test */
     public function title_must_be_at_least_4_characters()
