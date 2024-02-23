@@ -29,12 +29,18 @@ trait MakesJsonApiRequests
                     . PHP_EOL . PHP_EOL .
                     $e->getMessage());
             }
+            try {
+                $this->assertJsonStructure([
+                    'errors' => [
+                        ['title', 'detail', 'source' => ['pointer']]
+                    ]
+                ]);
+            } catch (ExpectationFailedException $e) {
+                PHPUnit::fail('Failed to find a validate JSON:API error response'
+                    . PHP_EOL . PHP_EOL .
+                    $e->getMessage());
+            }
 
-            $this->assertJsonStructure([
-                'errors' => [
-                    ['title', 'detail', 'source' => ['pointer']]
-                ]
-            ]);
             $this->assertHeader(
                 'content-type',
                 'application/vnd.api+json'
