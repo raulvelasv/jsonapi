@@ -12,7 +12,7 @@ class ValidateJsonApiDocument
     {
         if ($request->isMethod('POST') || $request->isMethod('PATCH')) {
             $request->validate([
-                'data' => ['required']
+                'data' => ['required', 'array']
             ]);
         }
         return $next($request);
