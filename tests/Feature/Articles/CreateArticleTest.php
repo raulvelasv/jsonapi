@@ -8,27 +8,10 @@ use Illuminate\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+
 class CreateArticleTest extends TestCase
 {
     use RefreshDatabase;
-    protected function setUp(): void
-    {
-        parent::setUp();
-        TestResponse::macro(
-            'assertJsonApiValidationErrors',
-            function ($attribute) {
-                /**@var TestResponse $this*/
-                $this->assertJsonStructure([
-                    'errors' => [
-                        ['title', 'detail', 'source' => ['pointer']]
-                    ]
-                ])->assertJsonFragment([
-                    'source' => ['pointer' => '/data/attributes/' . $attribute]
-                ])->assertHeader('content-type', 'application/vnd.api+json')
-                    ->assertStatus(422);
-            }
-        );
-    }
     /** @test */
     public function can_create_articles()
     {
@@ -73,7 +56,6 @@ class CreateArticleTest extends TestCase
             'data' => [
                 'type' => 'articles',
                 'attributes' => [
-                    'title' => 'ab',
                     'slug' => 'my-first-article',
                     'content' => 'content of my first article'
                 ]
