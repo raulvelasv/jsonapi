@@ -66,7 +66,8 @@ class CreateArticleTest extends TestCase
             ]
         ])->assertJsonFragment([
             'source' => ['pointer' => '/data/attributes/title']
-        ])->assertStatus(422);
+        ])->assertHeader('content-type', 'application/vnd.api+json')
+            ->assertStatus(422);
         // $response->assertJsonValidationErrors('data.attributes.title');
     }
     /** @test */
