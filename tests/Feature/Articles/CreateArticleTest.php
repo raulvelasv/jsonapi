@@ -45,9 +45,11 @@ class CreateArticleTest extends TestCase
             ]
         ]);
     }
+
     /** @test */
     public function title_is_required()
     {
+        // $this->withoutExceptionHandling();
         $response = $this->postJson(route('api.v1.articles.create'), [
             'data' => [
                 'type' => 'articles',
@@ -56,8 +58,15 @@ class CreateArticleTest extends TestCase
                     'content' => 'content of my first article'
                 ]
             ]
+        ])->dump();
+        $response->assertJsonStructure([
+            'errors' => [
+                ['title', 'detail', 'source' => ['pointer']]
+            ]
+        ])->assertJsonFragment([
+            'source' => ['pointer' => '/data/attributes/title']
         ]);
-        $response->assertJsonValidationErrors('data.attributes.title');
+        // $response->assertJsonValidationErrors('data.attributes.title');
     }
     /** @test */
     public function title_must_be_at_least_4_characters()
