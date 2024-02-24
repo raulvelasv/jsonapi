@@ -23,10 +23,8 @@ class ValidateJsonApiDocumentTest extends TestCase
     public function data_is_required()
     {
         $this->postJson('test_route', [])
-            ->dump()
             ->assertJsonApiValidationErrors('data');
         $this->patchJson('test_route', [])
-            ->dump()
             ->assertJsonApiValidationErrors('data');
     }
     /** @test */
@@ -35,12 +33,12 @@ class ValidateJsonApiDocumentTest extends TestCase
         $this->postJson('test_route', [
             'data' => 'string'
         ])
-            ->dump()
+
             ->assertJsonApiValidationErrors('data');
         $this->patchJson('test_route', [
             'data' => 'string'
         ])
-            ->dump()
+
             ->assertJsonApiValidationErrors('data');
     }
     /** @test */
@@ -138,5 +136,24 @@ class ValidateJsonApiDocumentTest extends TestCase
             ]
         ])
             ->assertJsonApiValidationErrors('data.id');
+    }
+    /** @test */
+    public function only_accepts_valid_json_api_document()
+    {
+        $this->postJson('test_route', [
+            'data' => [
+                'type' => 'string',
+                'attributes' => ['name' => 'test']
+            ]
+        ])
+            ->assertSuccessful();
+        $this->patchJson('test_route', [
+            'data' => [
+                'id' => '1',
+                'type' => 'string',
+                'attributes' => ['name' => 'test']
+            ]
+        ])
+            ->assertSuccessful();
     }
 }
