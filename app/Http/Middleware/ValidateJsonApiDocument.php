@@ -14,8 +14,13 @@ class ValidateJsonApiDocument
             $request->validate([
                 'data' => ['required', 'array'],
                 'data.type' => ['required', 'string'],
-                'data.attributes' => ['required']
+                'data.attributes' => ['required', 'array']
 
+            ]);
+        }
+        if ($request->isMethod('PATCH')) {
+            $request->validate([
+                'data.id' => ['required', 'string']
             ]);
         }
         return $next($request);
