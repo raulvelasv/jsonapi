@@ -14,6 +14,7 @@ class ValidateJsonApiDocumentTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withoutJsonApiDocumentFormatting();
         Route::any('test_route', function () {
             return 'OK';
         })->middleware(ValidateJsonApiDocument::class);

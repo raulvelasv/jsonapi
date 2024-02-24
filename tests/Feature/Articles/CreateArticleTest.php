@@ -17,14 +17,9 @@ class CreateArticleTest extends TestCase
     {
         // $this->withoutExceptionHandling();
         $response = $this->postJson(route('api.v1.articles.store'), [
-            'data' => [
-                'type' => 'articles',
-                'attributes' => [
-                    'title' => 'My first article',
-                    'slug' => 'my-first-article',
-                    'content' => 'content of my first article'
-                ]
-            ]
+            'title' => 'My first article',
+            'slug' => 'my-first-article',
+            'content' => 'content of my first article'
         ]);
         $response->assertCreated();
         $article = Article::first();
@@ -52,61 +47,38 @@ class CreateArticleTest extends TestCase
     public function title_is_required()
     {
         // $this->withoutExceptionHandling();
-        $response = $this->postJson(route('api.v1.articles.store'), [
-            'data' => [
-                'type' => 'articles',
-                'attributes' => [
-                    'slug' => 'my-first-article',
-                    'content' => 'content of my first article'
-                ]
-            ]
-        ]);
+        $this->postJson(route('api.v1.articles.store'), [
 
+            'slug' => 'my-first-article',
+            'content' => 'content of my first article'
 
-
-        $response->assertJsonApiValidationErrors('title');
+        ])->assertJsonApiValidationErrors('title');
     }
     /** @test */
     public function title_must_be_at_least_4_characters()
     {
-        $response = $this->postJson(route('api.v1.articles.store'), [
-            'data' => [
-                'type' => 'articles',
-                'attributes' => [
-                    'title' => 'abc',
-                    'slug' => 'my-first-article',
-                    'content' => 'content of my first article'
-                ]
-            ]
-        ]);
-        $response->assertJsonApiValidationErrors('title');
+        $this->postJson(route('api.v1.articles.store'), [
+
+            'title' => 'abc',
+            'slug' => 'my-first-article',
+            'content' => 'content of my first article'
+
+        ])->assertJsonApiValidationErrors('title');
     }
     /** @test */
     public function slug_is_required()
     {
-        $response = $this->postJson(route('api.v1.articles.store'), [
-            'data' => [
-                'type' => 'articles',
-                'attributes' => [
-                    'title' => 'My first article',
-                    'content' => 'content of my first article'
-                ]
-            ]
-        ]);
-        $response->assertJsonApiValidationErrors('slug');
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'content' => 'content of my first article'
+        ])->assertJsonApiValidationErrors('slug');
     }
     /** @test */
     public function content_is_required()
     {
-        $response = $this->postJson(route('api.v1.articles.store'), [
-            'data' => [
-                'type' => 'articles',
-                'attributes' => [
-                    'title' => 'My first article',
-                    'slug' => 'my-first-article',
-                ]
-            ]
-        ]);
-        $response->assertJsonApiValidationErrors('content');
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'slug' => 'my-first-article',
+        ])->assertJsonApiValidationErrors('content');
     }
 }
