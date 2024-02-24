@@ -24,20 +24,12 @@ class ArticleController extends Controller
     }
     public function store(SaveArticleRequest $request): ArticleResource
     {
-        $article = Article::create([
-            'title' => $request->input('data.attributes.title'),
-            'slug' => $request->input('data.attributes.slug'),
-            'content' => $request->input('data.attributes.content')
-        ]);
+        $article = Article::create($request->validated());
         return ArticleResource::make($article);
     }
     public function update(Article $article, SaveArticleRequest $request): ArticleResource
     {
-        $article->update([
-            'title' => $request->input('data.attributes.title'),
-            'slug' => $request->input('data.attributes.slug'),
-            'content' => $request->input('data.attributes.content')
-        ]);
+        $article->update($request->validated());
         return ArticleResource::make($article);
     }
     public function destroy(Article $article): \Illuminate\Http\Response

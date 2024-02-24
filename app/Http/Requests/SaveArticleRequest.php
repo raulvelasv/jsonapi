@@ -27,4 +27,16 @@ class SaveArticleRequest extends FormRequest
             'data.attributes.content' => ['required'],
         ];
     }
+
+    /**
+     * Get the validated data from the request.
+     *
+     * @param  string|null  $key
+     * @param  mixed  $default
+     * @return array
+     */
+    public function validated($key = null, $default = null): array
+    {
+        return parent::validated($key, $default)['data']['attributes'];
+    }
 }
