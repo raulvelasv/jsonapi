@@ -83,6 +83,15 @@ class CreateArticleTest extends TestCase
             'content' => 'content of my first article'
         ])->assertJsonApiValidationErrors('slug');
     }
+    /** @test */
+    public function slug_must_only_contain_letters_numbers_and_dashes()
+    {
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'slug' => '$%^&',
+            'content' => 'content of my first article'
+        ])->assertJsonApiValidationErrors('slug');
+    }
 
     /** @test */
     public function content_is_required()

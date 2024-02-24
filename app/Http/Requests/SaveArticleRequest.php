@@ -24,7 +24,7 @@ class SaveArticleRequest extends FormRequest
     {
         return [
             'data.attributes.title' => ['required', 'min:4'],
-            'data.attributes.slug' => ['required', Rule::unique('articles', 'slug')->ignore($this->route('article'))],
+            'data.attributes.slug' => ['required', 'alpha_dash', Rule::unique('articles', 'slug')->ignore($this->route('article'))],
             'data.attributes.content' => ['required'],
         ];
     }
