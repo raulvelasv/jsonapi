@@ -74,6 +74,17 @@ class CreateArticleTest extends TestCase
         ])->assertJsonApiValidationErrors('slug');
     }
     /** @test */
+    public function slug_must_be_unique()
+    {
+        $article = Article::factory()->create();
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'slug' => $article->slug,
+            'content' => 'content of my first article'
+        ])->assertJsonApiValidationErrors('slug');
+    }
+
+    /** @test */
     public function content_is_required()
     {
         $this->postJson(route('api.v1.articles.store'), [
