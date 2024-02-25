@@ -87,4 +87,42 @@ class PaginateArticleTest extends TestCase
         $this->assertStringContainsString('sort=title', $prevLink);
         $this->assertStringContainsString('sort=title', $nextLink);
     }
+    /** @test */
+    public function can_paginate_filtered_articles(): void
+    {
+        Article::factory(3)->create();
+        // Paso 1: creamos 3 artículos con los factory de modo que podamos comprobar posteriormente la
+        // ordenación
+        Article::factory()->create(['title' => "C Laravel"]);
+        Article::factory()->create(['title' => "A Laravel"]);
+        Article::factory()->create(['title' => "B Laravel"]);
+        // Paso 2. Definimos la ruta con los parámetros correspondientes
+        $url = route('api.v1.articles.index', [
+            'filter[title]' => 'laravel',
+            'page' => [
+                'size' => 1,
+                'number' => 2
+            ]
+        ]);
+
+        //        dd(urldecode($url)); // Inspeccionamos la variable, que debería contener el string
+        //          articles?filter[title]=laravel&page['size']=1&page['number']=2
+        // según especificación json:qpi
+
+        // Paso 3. Creamos la petición. Las cabeceras las añade el trait MakesJsonApiRequests
+        $response = $this->getJson($url);
+
+        // Hacemos las comprobaciones (asserts) siguientes
+        $firstLink = urldecode($response->json('links.first'));
+        $lastLink = urldecode($response->json('links.last'));
+        $prevLink = urldecode($response->json('links.prev'));
+        $nextLink = urldecode($response->json('links.next'));
+
+        // comprobamos que en estos cuatro enlaces aparece el parámetro 'sort=title'
+        // Los parámetros page['size'] y page['number'] se comprobaron en el método anterior
+        $this->assertStringContainsString('filter[title]=laravel', $firstLink);
+        $this->assertStringContainsString('filter[title]=laravel', $lastLink);
+        $this->assertStringContainsString('filter[title]=laravel', $prevLink);
+        $this->assertStringContainsString('filter[title]=laravel', $nextLink);
+    }
 }

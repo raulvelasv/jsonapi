@@ -22,23 +22,13 @@ class ArticleController extends Controller
     }
     public function index(): ArticleCollection
     {
-        $articles = Article::query();
 
-        $allowedFilters = ['title', 'content', 'year', 'month'];
+        $articles = Article::query()
+            ->allowedSorts(['title', 'content'])
+            ->allowedFilters(['title', 'content', 'year', 'month'])
+            ->jsonPaginate();
 
-        foreach (request('filter', []) as $filter => $value) {
-            abort_unless(in_array($filter, $allowedFilters), 400);
-            if ($filter === 'year')
-                $articles->whereYear('created_at', $value);
-            elseif ($filter === 'month')
-                $articles->whereMonth('created_at', $value);
-            else
-                $articles->where($filter, 'LIKE', '%' . $value . '%');
-        }
-
-        $articles->allowedSorts(['title', 'content']);
-
-        return ArticleCollection::make($articles->jsonPaginate());
+        return ArticleCollection::make($articles);
     }
     public function store(SaveArticleRequest $request): ArticleResource
     {

@@ -28,18 +28,30 @@ class JsonApiQueryBuilder
         };
     }
 
-    public function jsonPaginate()
+    public function allowedFilters(): Closure
     {
-        return  function () {
-            /**
-             * @var Builder $this
-             */
-            return   $this->paginate(
+        return function ($allowedFilters) {
+            /** @var Builder $this */
+            foreach (request('filter', []) as $filter => $value) {
+                abort_unless(in_array($filter, $allowedFilters), 400);
+                $this->hasNamedScope($filter) ?
+                    $this->{$filter}($value) :
+                    $this->where($filter, 'LIKE', '%' . $value . '%');
+            };
+            return $this;
+        };
+    }
+
+    public function jsonPaginate(): Closure
+    {
+        return function () {
+            /** @var Builder $this */
+            return $this->paginate(  // en este contexto $this es la clase que estamos extendiendo y debemos retornarlo
                 $perPage = request('page.size', 15),
                 $columns = ['*'],
                 $pageName = 'page[number]',
-                $page = request('page.number', 1)
-            )->appends(request()->only('sort', 'page.size'));
+                $page = request('page.number', 1),
+            )->appends(request()->only('sort', 'filter', 'page.size'));
         };
     }
 }
