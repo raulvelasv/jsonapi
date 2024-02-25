@@ -84,6 +84,48 @@ class CreateArticleTest extends TestCase
         ])->assertJsonApiValidationErrors('slug');
     }
     /** @test */
+    public function slug_must_not_contain_underscores()
+    {
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'slug' => 'with_underscores',
+            'content' => 'content of my first article'
+        ])->assertSee(__(
+            'validation.no_underscores',
+            ['attribute' => 'slug']
+        ))->dump()
+            ->assertJsonApiValidationErrors('slug');
+    }
+    /** @test */
+    public function slug_must_not_starts_with_dashes()
+    {
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'slug' => '-starts-with-dash',
+            'content' => 'content of my first article'
+        ])->assertSee(__(
+            'validation.no_starting_dashes',
+            ['attribute' => 'slug']
+        ))->dump()
+            ->assertJsonApiValidationErrors('slug');
+    }
+    /** @test */
+    public function slug_must_not_ends_with_dashes()
+    {
+        $this->postJson(route('api.v1.articles.store'), [
+            'title' => 'My first article',
+            'slug' => 'ends-with-dash-',
+            'content' => 'content of my first article'
+        ])->assertSee(__(
+            'validation.no_ending_dashes',
+            [
+                'attribute' => 'slug'
+            ]
+        ))->dump()
+            ->assertJsonApiValidationErrors('slug');
+    }
+
+    /** @test */
     public function slug_must_only_contain_letters_numbers_and_dashes()
     {
         $this->postJson(route('api.v1.articles.store'), [
