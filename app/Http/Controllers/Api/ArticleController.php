@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ArticleResource;
 use App\Http\Requests\SaveArticleRequest;
 use App\Http\Resources\ArticleCollection;
+use Illuminate\Support\Facades\Http;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ArticleController extends Controller
 {
@@ -20,11 +22,21 @@ class ArticleController extends Controller
     }
     public function index(Request $request): ArticleCollection
     {
-        $sortField = $request->input('sort');
-        $sortDirection = Str::of($sortField)->startsWith('-') ? 'desc' : 'asc';
-        $sortField = ltrim($sortField, '-');
-        $articles = Article::orderBy($sortField, $sortDirection)->get();
-        return ArticleCollection::make($articles);
+        $articles = Article::query();
+        if ($request->filled('sort')) {
+            $sortFileds = explode(',', $request->input('sort'));
+            $allowedSorts = ['title', 'content'];
+            foreach ($sortFileds as $sortField) {
+                $sortDirection = Str::of($sortField)->startsWith('-') ? 'desc' : 'asc';
+                $sortField = ltrim($sortField, '-');
+                abort_unless(in_array($sortField, $allowedSorts), 400);
+                $articles->orderBy($sortField, $sortDirection);
+            }
+        }
+
+
+
+        return ArticleCollection::make($articles->get());
     }
     public function store(SaveArticleRequest $request): ArticleResource
     {
