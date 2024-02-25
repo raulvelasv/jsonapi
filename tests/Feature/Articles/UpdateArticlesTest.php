@@ -4,15 +4,27 @@ namespace Tests\Feature\Articles;
 
 use Tests\TestCase;
 use App\Models\Article;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UpdateArticlesTest extends TestCase
 {
     use RefreshDatabase;
     /** @test */
+    public function guest_cannot_update_articles()
+    {
+        $article = Article::factory()->create();
+        $response = $this->patchJson(route('api.v1.articles.update', $article))
+            ->dump()->assertUnauthorized();
+
+        //        $response->assertJsonApiError();
+    }
+
+    /** @test */
     public function can_update_articles()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $response = $this->patchJson(route('api.v1.articles.update', $article, $article), [
             'title' => 'Update Article',
             'slug' => $article->slug,
@@ -42,6 +54,7 @@ class UpdateArticlesTest extends TestCase
     public function title_is_required()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
 
             'slug' => 'update-article',
@@ -53,6 +66,7 @@ class UpdateArticlesTest extends TestCase
     public function title_must_be_at_least_4_characters()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
 
             'title' => 'abc',
@@ -65,6 +79,7 @@ class UpdateArticlesTest extends TestCase
     public function slug_is_required()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
             'title' => 'Updated article',
             'content' => 'content of my first article'
@@ -75,7 +90,7 @@ class UpdateArticlesTest extends TestCase
     {
         $article1 = Article::factory()->create();
         $article2 = Article::factory()->create();
-
+        Sanctum::actingAs($article1->user);
         $this->patchJson(route('api.v1.articles.update', $article1), [
             'title' => 'My first article',
             'slug' => $article2->slug,
@@ -86,6 +101,7 @@ class UpdateArticlesTest extends TestCase
     public function slug_must_not_contain_underscores()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
             'title' => 'My first article',
             'slug' => 'with_underscores',
@@ -100,6 +116,7 @@ class UpdateArticlesTest extends TestCase
     public function slug_must_not_starts_with_dashes()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
             'title' => 'My first article',
             'slug' => '-starts-with-dash',
@@ -114,6 +131,7 @@ class UpdateArticlesTest extends TestCase
     public function slug_must_not_ends_with_dashes()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
             'title' => 'My first article',
             'slug' => 'ends-with-dash-',
@@ -131,6 +149,7 @@ class UpdateArticlesTest extends TestCase
     public function slug_must_only_contain_letters_numbers_and_dashes()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
             'title' => 'My first article',
             'slug' => '$%^&',
@@ -141,6 +160,7 @@ class UpdateArticlesTest extends TestCase
     public function content_is_required()
     {
         $article = Article::factory()->create();
+        Sanctum::actingAs($article->user);
         $this->patchJson(route('api.v1.articles.update', $article), [
             'title' => 'Updated article',
             'slug' => 'update-article',

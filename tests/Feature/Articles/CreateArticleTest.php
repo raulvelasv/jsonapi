@@ -4,8 +4,10 @@ namespace Tests\Feature\Articles;
 
 use Tests\TestCase;
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
@@ -13,9 +15,22 @@ class CreateArticleTest extends TestCase
 {
     use RefreshDatabase;
     /** @test */
+    public function guest_cannot_create_articles()
+    {
+        $this->postJson(route('api.v1.articles.store'))->assertUnauthorized();
+
+
+        //        $response->assertJsonApiError();
+
+        $this->assertDatabaseCount('articles', 0);
+    }
+    /** @test */
     public function can_create_articles()
     {
         // $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
         $response = $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'slug' => 'my-first-article',
@@ -23,6 +38,7 @@ class CreateArticleTest extends TestCase
         ]);
         $response->assertCreated();
         $article = Article::first();
+        $response->assertHeader('Location', route('api.v1.articles.show', $article));
         $response->assertHeader(
             'Location',
             route('api.v1.articles.show', $article)
@@ -46,6 +62,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function title_is_required()
     {
+        Sanctum::actingAs(User::factory()->create());
         // $this->withoutExceptionHandling();
         $this->postJson(route('api.v1.articles.store'), [
 
@@ -57,6 +74,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function title_must_be_at_least_4_characters()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
 
             'title' => 'abc',
@@ -68,6 +86,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function slug_is_required()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'content' => 'content of my first article'
@@ -76,6 +95,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function slug_must_be_unique()
     {
+        Sanctum::actingAs(User::factory()->create());
         $article = Article::factory()->create();
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
@@ -86,6 +106,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function slug_must_not_contain_underscores()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'slug' => 'with_underscores',
@@ -99,6 +120,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function slug_must_not_starts_with_dashes()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'slug' => '-starts-with-dash',
@@ -112,6 +134,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function slug_must_not_ends_with_dashes()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'slug' => 'ends-with-dash-',
@@ -128,6 +151,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function slug_must_only_contain_letters_numbers_and_dashes()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'slug' => '$%^&',
@@ -138,6 +162,7 @@ class CreateArticleTest extends TestCase
     /** @test */
     public function content_is_required()
     {
+        Sanctum::actingAs(User::factory()->create());
         $this->postJson(route('api.v1.articles.store'), [
             'title' => 'My first article',
             'slug' => 'my-first-article',

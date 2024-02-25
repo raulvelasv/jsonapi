@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Rules\Slug;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Validation\Rule;
 
 class SaveArticleRequest extends FormRequest
 {
@@ -30,21 +29,15 @@ class SaveArticleRequest extends FormRequest
                 'required',
                 'alpha_dash',
                 new Slug(),
-                Rule::unique('articles', 'slug')->ignore($this->route('article'))
+                Rule::unique('articles', 'slug')
+                    ->ignore($this->route('article'))
             ],
             'data.attributes.content' => ['required'],
         ];
     }
 
-    /**
-     * Get the validated data from the request.
-     *
-     * @param  string|null  $key
-     * @param  mixed  $default
-     * @return array
-     */
-    public function validated($key = null, $default = null): array
+    public function validated($key = null, $default = null)
     {
-        return parent::validated($key, $default)['data']['attributes'];
+        return parent::validated()['data']['attributes'];
     }
 }
