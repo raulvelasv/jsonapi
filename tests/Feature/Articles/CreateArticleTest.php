@@ -93,7 +93,7 @@ class CreateArticleTest extends TestCase
         ])->assertSee(__(
             'validation.no_underscores',
             ['attribute' => 'slug']
-        ))->dump()
+        ))
             ->assertJsonApiValidationErrors('slug');
     }
     /** @test */
@@ -106,7 +106,7 @@ class CreateArticleTest extends TestCase
         ])->assertSee(__(
             'validation.no_starting_dashes',
             ['attribute' => 'slug']
-        ))->dump()
+        ))
             ->assertJsonApiValidationErrors('slug');
     }
     /** @test */
@@ -121,7 +121,7 @@ class CreateArticleTest extends TestCase
             [
                 'attribute' => 'slug'
             ]
-        ))->dump()
+        ))
             ->assertJsonApiValidationErrors('slug');
     }
 

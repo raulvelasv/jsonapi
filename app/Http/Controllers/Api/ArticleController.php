@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Article;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SaveArticleRequest;
 use App\Http\Resources\ArticleResource;
+use App\Http\Requests\SaveArticleRequest;
 use App\Http\Resources\ArticleCollection;
 
 class ArticleController extends Controller
@@ -17,9 +18,12 @@ class ArticleController extends Controller
     {
         return ArticleResource::make($article);
     }
-    public function index()
+    public function index(Request $request): ArticleCollection
     {
-        $articles = Article::all();
+        $sortField = $request->input('sort');
+        $sortDirection = Str::of($sortField)->startsWith('-') ? 'desc' : 'asc';
+        $sortField = ltrim($sortField, '-');
+        $articles = Article::orderBy($sortField, $sortDirection)->get();
         return ArticleCollection::make($articles);
     }
     public function store(SaveArticleRequest $request): ArticleResource
